@@ -6,3 +6,4 @@ readme.md
 CNN_extract.py
 .vscode
 .VGG2_Dataset
+.cropped_faces.pkl
