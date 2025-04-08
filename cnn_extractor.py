@@ -1,8 +1,8 @@
 import cv2
 import torch
 import torch.nn as nn
-import torchvision.models as models
 import torchvision.transforms as transforms
+from torchvision.models import resnet18, ResNet18_Weights
 
 def load_pretrained_model():
     """
@@ -11,7 +11,8 @@ def load_pretrained_model():
     Returns:
     - model: Modified ResNet-18 model without the classification layer.
     """
-    model = models.resnet18(pretrained=True)  # Load ResNet-18
+    weights = ResNet18_Weights.DEFAULT
+    model = resnet18(weights=weights)
     model = nn.Sequential(*list(model.children())[:-1])  # Remove classification layer
     model.eval()  # Set model to evaluation mode
     return model
