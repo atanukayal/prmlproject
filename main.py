@@ -21,10 +21,10 @@ firebase_admin.initialize_app(cred, {
 bucket = storage.bucket()
 
 # Load models
-pca = joblib.load("pca_model.pkl")
-scaler = joblib.load("scalar.pkl")
-svm_model = joblib.load("svm_model.pkl")
-label_encoder = joblib.load("label_encoder.pkl")
+pca = joblib.load("saved_models/pca_model.pkl")
+scaler = joblib.load("saved_models/scalar.pkl")
+svm_model = joblib.load("saved_models/svm_model.pkl")
+label_encoder = joblib.load("saved_models/label_encoder.pkl")
 
 # Load CNN model
 device = 'cuda' if cv2.cuda.getCudaEnabledDeviceCount() > 0 else 'cpu'
