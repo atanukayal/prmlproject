@@ -38,6 +38,15 @@ data = {
         "year": 2,
         "last_attendance_time": "2022-12-11 00:54:34"
     },
+    "n000012": {
+        "name": "Vishal Dhaniya",
+        "major": "AI&DS",
+        "starting_year": 2023,
+        "total_attendance": 10,
+        "standing": "A+",
+        "year": 4,
+        "last_attendance_time": "2022-12-11 00:54:34"
+    },
     "n000043": {
         "name": "Sydney Sweeney",
         "major": "Economics",

@@ -7,3 +7,4 @@ CNN_extract.py
 cropped_faces.pkl
 serviceAccountKey.json
 all_features.pkl
+shape_predictor_68_face_landmarks.dat

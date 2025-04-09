@@ -33,6 +33,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 # Importing student images
+# Importing student images
 folderPath = 'Images'
 pathList = os.listdir(folderPath)
 print(pathList)
@@ -45,14 +46,23 @@ for path in pathList:
     if img is None:
         print(f"Warning: Could not load {path}")
         continue
+
+    # ✅ Resize to 216x216 before feature extraction and uploading
+    img = cv2.resize(img, (216, 216))
+
     imgList.append(img)
     studentIds.append(os.path.splitext(path)[0])
 
+    # Save resized image temporarily before upload (overwrite original)
     fileName = f'{folderPath}/{path}'
+    cv2.imwrite(fileName, img)  # ✅ Overwrite the file with resized image
+
     blob = bucket.blob(fileName)
     blob.upload_from_filename(fileName)
-    # Optionally print or log the upload
-    print(f"Uploaded {fileName} to Firebase Storage.")
+
+    print(f"Uploaded resized {fileName} to Firebase Storage.")
+
+
 
 print(studentIds)
 
