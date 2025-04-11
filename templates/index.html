@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IIT Jodhpur | Face Recognition Attendance</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f7f9fc;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #00274d;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    h1, h2 {
+      margin: 10px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    form, video, canvas {
+      margin: 10px 0;
+    }
+    video, canvas {
+      border: 2px solid #ddd;
+      width: 320px;
+      height: 240px;
+    }
+    input[type="file"], input[type="submit"], button {
+      margin-top: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: #00274d;
+      color: white;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover, button:hover {
+      background: #0056b3;
+    }
+    #result img {
+      margin-top: 10px;
+      max-width: 300px;
+    }
+    .flex-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>IIT Jodhpur - Face Recognition Attendance System</h1>
+  </header>
+  <div class="container">
+    <h2>Upload Image</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="image" accept="image/*" required />
+      <br />
+      <input type="submit" value="Upload and Process" />
+    </form>
+
+    <hr />
+
+    <h2>Capture from Webcam</h2>
+    <div class="flex-row">
+      <video id="videoElement" autoplay></video>
+      <canvas id="capturedCanvas" style="display:none;"></canvas>
+    </div>
+    <button id="captureButton">Capture Photo</button>
+    <form id="captureForm" enctype="multipart/form-data" style="display:none;">
+      <input type="file" id="capturedImage" name="image" />
+      <input type="submit" value="Upload Captured Photo" />
+    </form>
+
+    <hr />
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    // Camera access and capture logic
+    const video = document.getElementById('videoElement');
+    const canvas = document.getElementById('capturedCanvas');
+    const captureButton = document.getElementById('captureButton');
+    const captureForm = document.getElementById('captureForm');
+    const capturedImageInput = document.getElementById('capturedImage');
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+      } catch (err) {
+        alert('Camera not supported or permission denied.');
+      }
+    }
+
+    captureButton.addEventListener('click', () => {
+      canvas.style.display = 'block';
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob => {
+        const file = new File([blob], 'capture.jpg', { type: 'image/jpeg' });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        capturedImageInput.files = dataTransfer.files;
+        captureForm.style.display = 'block';
+      }, 'image/jpeg');
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const response = await fetch('/process', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      displayResult(data);
+    });
+
+    captureForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const response = await fetch('/process', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      displayResult(data);
+    });
+
+    function displayResult(data) {
+      const resultDiv = document.getElementById('result');
+      if (data.error) {
+        resultDiv.innerHTML = `<h3 style="color:red">Error: ${data.error}</h3>`;
+        return;
+      }
+      let html = `<h3>${data.message}</h3>`;
+      if (data.predictedId) html += `<p><strong>Predicted ID:</strong> ${data.predictedId}</p>`;
+      if (data.studentInfo) {
+        html += `<p><strong>Name:</strong> ${data.studentInfo.name}</p>`;
+        html += `<p><strong>Major:</strong> ${data.studentInfo.major}</p>`;
+        html += `<p><strong>Total Attendance:</strong> ${data.studentInfo.total_attendance}</p>`;
+      }
+      if (data.imgStudent) {
+        html += `<p><strong>Student Image:</strong></p>`;
+        html += `<img src="data:image/jpeg;base64,${data.imgStudent}" alt="Student Image" />`;
+      } else {
+        html += `<p>No student image available.</p>`;
+      }
+      if (data.attendance_update) {
+        html += `<p><em>${data.attendance_update}</em></p>`;
+      }
+      resultDiv.innerHTML = html;
+    }
+
+    // Start the webcam on load
+    window.onload = startCamera;
+  </script>
+</body>
+</html>
