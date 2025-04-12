@@ -1,5 +1,3 @@
-# app.py
-
 from flask import Flask, render_template, request, jsonify
 import cv2
 import numpy as np
@@ -34,4 +32,5 @@ def process_image():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
+    # For local testing, you can still use Flask’s debug server
     app.run(host='0.0.0.0', port=8080, debug=True)

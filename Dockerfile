@@ -22,6 +22,5 @@ COPY . .
 # Expose the port
 EXPOSE 8080
 
-# Run the app
-CMD ["python", "app.py"]
- 
+# Run the app using Gunicorn as the production WSGI server
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
