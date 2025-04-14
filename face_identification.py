@@ -23,7 +23,7 @@ if not firebase_admin._apps:
 bucket = storage.bucket()
 
 # Load models and other resources (update paths to use forward slashes for cross‑platform compatibility)
-pca = joblib.load("saved_models/pca_model.pkl")
+dim = joblib.load("saved_models/dim.pkl")
 scaler = joblib.load("saved_models/scalar.pkl")
 svm_model = joblib.load("saved_models/svm_model.pkl")
 label_encoder = joblib.load("saved_models/label_encoder.pkl")
@@ -68,11 +68,11 @@ def process_frame(img):
     lbp_feat = extract_lbp_features(faceROI_rgb).flatten()
     cnn_feat = extract_cnn_features(faceROI_rgb, cnn_model, device).flatten()
 
-    combinedFeatures = np.concatenate([hog_feat, lbp_feat, cnn_feat])
+    combinedFeatures = np.concatenate([cnn_feat, hog_feat, lbp_feat])
     scaled_features = scaler.transform(combinedFeatures.reshape(1, -1))
-    pca_features = pca.transform(scaled_features)
+    features = dim.transform(scaled_features)
     
-    predicted_label = svm_model.predict(pca_features)[0]
+    predicted_label = svm_model.predict(features)[0]
     predictedId = label_encoder.inverse_transform([predicted_label])[0]
     result_dict["predictedId"] = predictedId
 

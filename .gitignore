@@ -11,3 +11,5 @@ shape_predictor_68_face_landmarks.dat
 __pycache__
 saved_models
 venv/
+ann_model.pth
+__pycache__
