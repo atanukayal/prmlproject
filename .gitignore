@@ -10,3 +10,4 @@ all_features.pkl
 shape_predictor_68_face_landmarks.dat
 __pycache__
 saved_models
+venv/
